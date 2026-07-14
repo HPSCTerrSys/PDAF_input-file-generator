@@ -79,6 +79,10 @@ def _srun_set_flag(line, flag, value):
 
 def adapt_jobscript_slurm(
     output=None,
+    sbatch_job_name=None,
+    sbatch_account=None,
+    sbatch_partition=None,
+    sbatch_time=None,
     cmd_nodes=None,
     cmd_ntasks_per_node=None,
     cmd_n_modeltasks=None,
@@ -100,7 +104,15 @@ def adapt_jobscript_slurm(
 
     modified_lines = []
     for line in lines:
-        if line.startswith("#SBATCH --nodes=") and cmd_nodes is not None:
+        if line.startswith("#SBATCH --job-name=") and sbatch_job_name is not None:
+            modified_lines.append(f"#SBATCH --job-name={sbatch_job_name}\n")
+        elif line.startswith("#SBATCH --account=") and sbatch_account is not None:
+            modified_lines.append(f"#SBATCH --account={sbatch_account}\n")
+        elif line.startswith("#SBATCH --partition=") and sbatch_partition is not None:
+            modified_lines.append(f"#SBATCH --partition={sbatch_partition}\n")
+        elif line.startswith("#SBATCH --time=") and sbatch_time is not None:
+            modified_lines.append(f"#SBATCH --time={sbatch_time}\n")
+        elif line.startswith("#SBATCH --nodes=") and cmd_nodes is not None:
             modified_lines.append(f"#SBATCH --nodes={cmd_nodes}\n")
         elif line.startswith("#SBATCH --ntasks-per-node=") and cmd_ntasks_per_node is not None:
             modified_lines.append(f"#SBATCH --ntasks-per-node={cmd_ntasks_per_node}\n")
@@ -156,6 +168,16 @@ if __name__ == "__main__":
              "Relative paths are resolved before changing to --rundir.",
     )
 
+    group_sbatch = parser.add_argument_group("SBATCH", "jobscript.slurm #SBATCH directives")
+    group_sbatch.add_argument("--sbatch-job_name", type=str, default=None,
+                              help="Job name (#SBATCH --job-name)")
+    group_sbatch.add_argument("--sbatch-account", type=str, default=None,
+                              help="Billing account (#SBATCH --account)")
+    group_sbatch.add_argument("--sbatch-partition", type=str, default=None,
+                              help="Partition / queue (#SBATCH --partition)")
+    group_sbatch.add_argument("--sbatch-time", type=str, default=None,
+                              help="Wall-clock time limit, format HH:MM:SS (#SBATCH --time)")
+
     group_cmd = parser.add_argument_group(
         "CMD",
         "jobscript.slurm command line options — "
@@ -208,5 +230,5 @@ if __name__ == "__main__":
 
     adapt_jobscript_slurm(
         output=output,
-        **{k: v for k, v in vars(args).items() if k.startswith("cmd_")},
+        **{k: v for k, v in vars(args).items() if k.startswith(("sbatch_", "cmd_"))},
     )
