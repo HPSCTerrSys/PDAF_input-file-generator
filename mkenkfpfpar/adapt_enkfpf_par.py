@@ -139,7 +139,7 @@ def adapt_enkfpf_par(
     config.read("enkfpf.par")
 
     if pf_problemname is not None:
-        config["PF"]["problemname"] = f'"{pf_problemname}"'
+        config["PF"]["problemname"] = str(pf_problemname)
     if pf_nprocs is not None:
         config["PF"]["nprocs"] = str(pf_nprocs)
     if pf_starttime is not None:
@@ -188,7 +188,7 @@ def adapt_enkfpf_par(
         config["PF"]["olfmasking_depth"] = str(pf_olfmasking_depth)
 
     if clm_problemname is not None:
-        config["CLM"]["problemname"] = f'"{clm_problemname}"'
+        config["CLM"]["problemname"] = str(clm_problemname)
     if clm_nprocs is not None:
         config["CLM"]["nprocs"] = str(clm_nprocs)
     if clm_update_swc is not None:
@@ -232,7 +232,7 @@ def adapt_enkfpf_par(
         config["COSMO"]["dtmult"] = str(cosmo_dtmult)
 
     if da_outdir is not None:
-        config["DA"]["outdir"] = f'"{da_outdir}"'
+        config["DA"]["outdir"] = str(da_outdir)
     if da_nreal is not None:
         config["DA"]["nreal"] = str(da_nreal)
     if da_startreal is not None:
@@ -302,7 +302,8 @@ if __name__ == "__main__":
         "https://hpscterrsys.github.io/pdaf/users_guide/running_tsmp_pdaf/input_enkfpf.html#pf",
     )
     group_pf.add_argument("--pf-problemname", type=str, default=None,
-                          help="Problem prefix for ParFlow")
+                          help="Problem prefix for ParFlow. String values must include "
+                               "iniparser quotes, e.g. --pf-problemname '\"myrun\"'")
     group_pf.add_argument("--pf-nprocs", type=int, default=None,
                           help="Number of processors per ParFlow instance")
     group_pf.add_argument("--pf-starttime", type=float, default=None,
@@ -356,7 +357,8 @@ if __name__ == "__main__":
         "https://hpscterrsys.github.io/pdaf/users_guide/running_tsmp_pdaf/input_enkfpf.html#clm",
     )
     group_clm.add_argument("--clm-problemname", type=str, default=None,
-                           help="Problem prefix for CLM")
+                           help="Problem prefix for CLM. String values must include "
+                                "iniparser quotes, e.g. --clm-problemname '\"clmin\"'")
     group_clm.add_argument("--clm-nprocs", type=int, default=None,
                            help="Number of processors per CLM instance")
     group_clm.add_argument("--clm-update_swc", type=int, default=None,
@@ -410,7 +412,8 @@ if __name__ == "__main__":
         "https://hpscterrsys.github.io/pdaf/users_guide/running_tsmp_pdaf/input_enkfpf.html#da",
     )
     group_da.add_argument("--da-outdir", type=str, default=None,
-                          help="Directory for assimilation output")
+                          help="Directory for assimilation output. String values must include "
+                               "iniparser quotes, e.g. --da-outdir '\".\"'")
     group_da.add_argument("--da-nreal", type=int, default=None,
                           help="Number of ensemble members (must equal cmd-n_modeltasks)")
     group_da.add_argument("--da-startreal", type=int, default=None,
