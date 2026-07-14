@@ -139,7 +139,7 @@ def adapt_enkfpf_par(
     config.read("enkfpf.par")
 
     if pf_problemname is not None:
-        config["PF"]["problemname"] = str(pf_problemname)
+        config["PF"]["problemname"] = f'"{pf_problemname}"'
     if pf_nprocs is not None:
         config["PF"]["nprocs"] = str(pf_nprocs)
     if pf_starttime is not None:
@@ -188,7 +188,7 @@ def adapt_enkfpf_par(
         config["PF"]["olfmasking_depth"] = str(pf_olfmasking_depth)
 
     if clm_problemname is not None:
-        config["CLM"]["problemname"] = str(clm_problemname)
+        config["CLM"]["problemname"] = f'"{clm_problemname}"'
     if clm_nprocs is not None:
         config["CLM"]["nprocs"] = str(clm_nprocs)
     if clm_update_swc is not None:
@@ -232,7 +232,7 @@ def adapt_enkfpf_par(
         config["COSMO"]["dtmult"] = str(cosmo_dtmult)
 
     if da_outdir is not None:
-        config["DA"]["outdir"] = str(da_outdir)
+        config["DA"]["outdir"] = f'"{da_outdir}"'
     if da_nreal is not None:
         config["DA"]["nreal"] = str(da_nreal)
     if da_startreal is not None:
