@@ -1,0 +1,254 @@
+# TSMP-PDAF control file (enkfpf.par)
+#
+# Documentation: https://hpscterrsys.github.io/pdaf/users_guide/running_tsmp_pdaf/input_enkfpf.html
+#
+# This file contains ALL parameters recognised by read_enkfpar.c,
+# each set to the coded default value.  Parameters that MUST be
+# adapted for every experiment are marked with "# REQUIRED".
+#
+# Format: INI-style, parsed by iniparser.
+# Sections: [DA]  [PF]  [CLM]  [COSMO]
+#
+# Constraint: PF:nprocs + CLM:nprocs + COSMO:nprocs == npes_model
+#             (total MPI ranks passed to the executable)
+# Constraint: DA:nreal == n_modeltasks
+#             (number of ensemble members == number of model tasks)
+
+# ---------------------------------------------------------------------------
+[DA]
+# ---------------------------------------------------------------------------
+
+# Directory for statistics output files (empty string = current directory)
+outdir                = ""
+
+# Number of ensemble realisations                                  # REQUIRED
+nreal                 = 0
+
+# Index of first realisation (used to build input/output filenames)
+startreal             = 0
+
+# DA cycling interval [same unit as PF:starttime / PF:simtime]
+da_interval           = 1
+
+# DA interval for the final assimilation step; only used when flexible_da_interval=1
+da_interval_final     = 1
+
+# 0: fixed da_interval (default)
+# 1: flexible da_interval read from observation files;
+#    requires da_interval = 1, PF:simtime = total_steps, PF:starttime = tstartcycle
+flexible_da_interval  = 0
+
+# Time offset for statistics dump (integer number of DA cycles)
+stat_dumpoffset       = 0
+
+# Verbosity of the wrapper layer (0 = silent, 1 = normal, >1 = debug)
+screen_wrapper        = 1
+
+# Observation type:
+#   1 = point observations (default)
+#   0 = multi-scale / areal observations
+point_obs             = 1
+
+# 0: nearest-neighbour observation mapping (default)
+# 1: interpolated observation mapping
+obs_interp_switch     = 0
+
+# Maximum allowed analysis increment as a fraction of the current state value
+# (1.0 = increment capped at 100% of current value); only used when CLM:update_tws=1
+max_inc               = 1.0
+
+# Use time-averaged (1) vs instantaneous (0) CLM water-storage fields for TWS DA;
+# only used when CLM:update_tws=1
+TWS_smoother          = 0
+
+# Composition of the CLM TWS state vector for GRACE DA (0 = subdivided per layer);
+# only used when CLM:update_tws=1
+state_setup           = 0
+
+# Reserved for future use: intended to control snow component update during
+# GRACE/TWS DA; not yet implemented
+update_snow           = 0
+
+# Reserved for future use: intended for anomaly assimilation (subtract temporal
+# climatological mean from TWS before assimilation); not yet implemented
+remove_mean           = 0
+
+# Exclude Greenland grid cells from the TWS state vector (0 = off);
+# only used when CLM:update_tws=1
+exclude_greenland     = 0
+
+# DA time step at which the CLM running temporal average is reset to zero before
+# the first GRACE observation; set to one averaging period before the first
+# assimilation time (0 = no start-up reset); only used when CLM:update_tws=1
+set_zero_start        = 0
+
+# Cosmic-ray neutron sensor (CRNS) forward operator switch (0 = off)
+crns_flag             = 0
+
+# Convergence criterion (dimensionless, 0–1) for the CRNS averaging skin-depth
+# weighting procedure (Schrön et al. 2017); only used for crns_flag=1
+da_crns_depth_tol     = 0.01
+
+# Bulk density [g/cm³] for CRNS operator (-1.0 = read from CLM); only used for crns_flag=2
+crns_bd               = -1.0
+
+# Write observation index file for debugging (0 = off)
+print_obs_index       = 0
+
+
+# ---------------------------------------------------------------------------
+[PF]   # ParFlow settings
+# ---------------------------------------------------------------------------
+
+# ParFlow problem / run name (base of all ParFlow file names)     # REQUIRED
+problemname           = ""
+
+# Subdirectory prefix for ensemble input files
+# If non-empty, input is read from  <prefix_input>_NNNNN/<problemname>_NNNNN
+# If empty, input is read from  <problemname>_NNNNN
+prefix_input          = ""
+
+# Subdirectory prefix for ensemble output files (same logic as prefix_input)
+prefix_output         = ""
+
+# Number of MPI ranks assigned to ParFlow                         # REQUIRED
+nprocs                = 0
+
+# Simulation start time [h]
+starttime             = 0.0
+
+# Total simulation time [h]  (overrides deprecated "endtime")     # REQUIRED
+simtime               = 0.0
+
+# Conversion factor between CLM/COSMO time steps and ParFlow timing units.
+# For CLM-ParFlow: dt = dtime / TimingInfo.BaseUnit  (dtime from lnd.stdin).
+# For CLM-standalone: set dt=1.0 so that DA:da_interval counts CLM time steps.
+dt                    = 0.0
+
+# State vector update flag:
+#   1 = pressure state vector, assimilate pressure data (default)
+#   2 = soil-moisture state vector, assimilate SM data
+#   3 = mixed SM+pressure state vector, SM data update pressure indirectly
+updateflag            = 1
+
+# Parameter update switch (0 = off, 1 = update soil parameters)
+paramupdate           = 0
+
+# Anisotropy ratio k_y / k_x  (1 = isotropic, applied in TSMP-PDAF)
+aniso_perm_y          = 1.0
+
+# Anisotropy ratio k_z / k_x  (1 = isotropic)
+aniso_perm_z          = 1.0
+
+# 0: use aniso_perm_y / aniso_perm_z from this file (default)
+# 1: read anisotropy ratios directly from the ParFlow input deck
+aniso_use_parflow     = 0
+
+# Write updated state variable ensemble (pressure or SM) as pfb files after each DA step (1 = on)
+printensemble         = 1
+
+# Write ensemble fields only at this specific DA step (-1 = every step, -2 = no output)
+t_printensemble       = -2
+
+# Write ensemble-mean and spread statistics (1 = on)
+printstat             = 1
+
+# Write ensemble of updated parameter fields (1 = on)
+paramprintensemble    = 1
+
+# Write statistics of updated parameter fields (1 = on)
+paramprintstat        = 1
+
+# Overland-flow masking of state update (0 = off)
+olfmasking            = 0
+
+# Overland-flow masking of parameter update (0 = off)
+olfmasking_param      = 0
+
+# Number of subsurface layers to mask from the top (overland-flow masking)
+olfmasking_depth      = 1
+
+# Groundwater masking of state update (0 = off)
+gwmasking             = 0
+
+# Write groundwater mask to file (0 = off)
+printgwmask           = 0
+
+# Damping factor for parameter update increments (1.0 = no damping)
+dampingfactor_param   = 1.0
+
+# Damping factor for state update increments (1.0 = no damping)
+dampingfactor_state   = 1.0
+
+# Soil-moisture threshold below which state damping is activated (0 = off)
+damping_switch_sm     = 0.0
+
+# Frequency of parameter updates: update every N-th DA cycle (1 = every cycle)
+paramupdate_frequency = 1
+
+
+# ---------------------------------------------------------------------------
+[CLM]  # Community Land Model settings
+# ---------------------------------------------------------------------------
+
+# CLM input file base name (will be extended with _NNNNN)         # REQUIRED
+problemname           = ""
+
+# Number of MPI ranks assigned to CLM                             # REQUIRED
+nprocs                = 0
+
+# Update soil water content in CLM state vector (1 = on)
+update_swc            = 1
+
+# Update ground and vegetation temperature in CLM state vector (0 = off); CLM3.5 only
+update_T              = 0
+
+# Update soil texture parameters in CLM (0 = off)
+update_texture        = 0
+
+# Write CLM soil-water-content ensemble fields (0 = off)
+print_swc             = 0
+
+# Write CLM evapotranspiration ensemble fields (0 = off)
+print_et              = 0
+
+# Write CLM increment fields (0 = off)
+print_inc             = 0
+
+# Include all SWC columns of a CLM gridcell in the state vector (0 = off, uses first column only)
+# Mutually exclusive with statevec_colmean
+statevec_allcol       = 0
+
+# Include only the column-mean in the CLM state vector (0 = off)
+# Mutually exclusive with statevec_allcol
+statevec_colmean      = 0
+
+# Restrict state vector to active (vegetated) CLM columns only (0 = off)
+statevec_only_active  = 0
+
+# Maximum number of CLM soil layers included in state vector
+statevec_max_layer    = 25
+
+# Write CLM ensemble fields only at this specific DA step (-1 = every step, -2 = no output)
+t_printensemble       = -2
+
+# Enforce CLM minimum water content after update (0 = off)
+watmin_switch         = 0
+
+# Mask snow-covered cells from SWC update (0 = off)
+swc_mask_snow         = 0
+
+# Update total water storage in CLM state vector (0 = off)
+update_tws            = 0
+
+
+# ---------------------------------------------------------------------------
+[COSMO]  # COSMO atmospheric model settings (deprecated)
+# ---------------------------------------------------------------------------
+
+# NOT USED by TSMP-PDAF. COSMO receives the remaining ranks:
+# (npes_world / nreal) - PF:nprocs - CLM:nprocs
+nprocs                = 0
+
+# COSMO time-step multiplier relative to the coupling time-step (0 if unused)
+dtmult                = 0
