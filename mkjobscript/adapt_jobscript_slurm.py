@@ -216,7 +216,7 @@ if __name__ == "__main__":
     # Check for duplicate flags
     seen_flags = set()
     for token in sys.argv[1:]:
-        if token.startswith("-"):
+        if token.startswith("--"):
             if token in seen_flags:
                 parser.error(f"argument {token} appears more than once")
             seen_flags.add(token)
