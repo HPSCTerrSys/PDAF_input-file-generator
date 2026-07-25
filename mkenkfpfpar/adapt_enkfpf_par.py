@@ -109,6 +109,9 @@ def adapt_enkfpf_par(
     clm_update_tws=None,
     clm_increment_type=None,
     clm_print_da_hist_file=None,
+    clm_update_lai=None,
+    clm_update_lai_params=None,
+    clm_update_lai_incr_w=None,
     cosmo_nprocs=None,
     cosmo_dtmult=None,
     da_outdir=None,
@@ -226,6 +229,12 @@ def adapt_enkfpf_par(
         config["CLM"]["increment_type"] = str(clm_increment_type)
     if clm_print_da_hist_file is not None:
         config["CLM"]["print_da_hist_file"] = str(clm_print_da_hist_file)
+    if clm_update_lai is not None:
+        config["CLM"]["update_lai"] = str(clm_update_lai)
+    if clm_update_lai_params is not None:
+        config["CLM"]["update_lai_params"] = str(clm_update_lai_params)
+    if clm_update_lai_incr_w is not None:
+        config["CLM"]["update_lai_incr_w"] = str(clm_update_lai_incr_w)
 
     if cosmo_nprocs is not None:
         config["COSMO"]["nprocs"] = str(cosmo_nprocs)
@@ -397,6 +406,16 @@ if __name__ == "__main__":
                            help="Increment type")
     group_clm.add_argument("--clm-print_da_hist_file", type=int, default=None,
                            help="Write DA history file output (0: off, 1: on)")
+    group_clm.add_argument("--clm-update_lai", type=int, default=None,
+                           help="LAI DA state vector layout (0: off, 1: gridcell LAI, "
+                                "2: patch leafc/slatop/dsladlai, 3: patch leafc/livestemc/deadstemc)")
+    group_clm.add_argument("--clm-update_lai_params", type=int, default=None,
+                           help="Joint LAI parameter estimation (0: off; 1: slatop+medlynslope "
+                                "for update_lai=3; 1: slatop for update_lai=1; "
+                                "2: slatop+dsladlai for update_lai=2)")
+    group_clm.add_argument("--clm-update_lai_incr_w", type=float, default=None,
+                           help="Blend between additive (1.0) and multiplicative (0.0) "
+                                "patch LAI increments (options 1 and 2 only)")
 
     group_cosmo = parser.add_argument_group(
         "COSMO",
