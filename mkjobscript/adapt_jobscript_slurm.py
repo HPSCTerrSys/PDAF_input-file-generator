@@ -94,6 +94,7 @@ def adapt_jobscript_slurm(
     cmd_use_omi=None,
     cmd_screen=None,
     cmd_forget=None,
+    cmd_type_forget=None,
     cmd_locweight=None,
     cmd_cradius=None,
     cmd_sradius=None,
@@ -133,6 +134,8 @@ def adapt_jobscript_slurm(
                 line = _srun_set_flag(line, "use_omi", cmd_use_omi)
             if cmd_forget is not None:
                 line = _srun_set_flag(line, "forget", cmd_forget)
+            if cmd_type_forget is not None:
+                line = _srun_set_flag(line, "type_forget", cmd_type_forget)
             if cmd_locweight is not None:
                 line = _srun_set_flag(line, "locweight", cmd_locweight)
             if cmd_cradius is not None:
@@ -206,6 +209,8 @@ if __name__ == "__main__":
                            help="PDAF output verbosity (0: none, 1: basic, 2: +timing, 3: +debug)")
     group_cmd.add_argument("--cmd-forget", type=float, default=None,
                            help="Forgetting factor for filter analysis")
+    group_cmd.add_argument("--cmd-type_forget", type=int, default=None,
+                           help="Type of forgetting factor (0: fixed, 1: global adaptive, 2: local adaptive for LSEIK/LETKF/LESTKF)")
     group_cmd.add_argument("--cmd-locweight", type=int, default=None,
                            help="Localization weight function (0: uniform, 1: exponential, 2: Gaspari-Cohn)")
     group_cmd.add_argument("--cmd-cradius", type=float, default=None,
